@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Nómina Profesional v3.0</title>
+    <link rel="stylesheet" href="estilos-v3-corregido.css">
+</head>
+<body>
+    <!-- ENCABEZADO -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>💼 Sistema de Nómina Profesional v3.0</h1>
+                <div class="header-controls">
+                    <button class="btn-theme" onclick="cambiarTema()" title="Cambiar tema">🌓</button>
+                    <button class="btn-config" onclick="abrirConfiguracion()" title="Configuración">⚙️</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="nav-tabs">
+        <div class="container">
+            <button class="tab-btn active" onclick="cambiarTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="cambiarTab('empleados')">👥 Empleados</button>
+            <button class="tab-btn" onclick="cambiarTab('pagos')">💰 Pagos</button>
+            <button class="tab-btn" onclick="cambiarTab('adelantos')">💸 Adelantos</button>
+            <button class="tab-btn" onclick="cambiarTab('departamentos')">🏢 Departamentos</button>
+            <button class="tab-btn" onclick="cambiarTab('vacaciones')">🌴 Vacaciones</button>
+            <button class="tab-btn" onclick="cambiarTab('licencias')">🏥 Licencias</button>
+            <button class="tab-btn" onclick="cambiarTab('calculadora')">🧮 Calculadora</button>
+            <button class="tab-btn" onclick="cambiarTab('calendario')">📅 Calendario</button>
+            <button class="tab-btn" onclick="cambiarTab('reportes')">📈 Reportes</button>
+        </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="container">
+        <!-- ============================================ -->
+        <!-- TAB: DASHBOARD -->
+        <!-- ============================================ -->
+        <section id="dashboard" class="tab-content active">
+            <div class="section-header">
+                <h2>📊 Dashboard General</h2>
+                <div class="dashboard-filters">
+                    <select id="dashboardMes" onchange="actualizarDashboard()">
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <select id="dashboardAnio" onchange="actualizarDashboard()">
+                        <!-- Se llena dinámicamente -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Resumen -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3 id="totalEmpleados">0</h3>
+                        <p>Empleados Activos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="totalPagosMes">$0</h3>
+                        <p>Total Pagos del Mes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💸</div>
+                    <div class="stat-info">
+                        <h3 id="totalAdelantos">$0</h3>
+                        <p>Adelantos Activos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-info">
+                        <h3 id="totalDepartamentos">0</h3>
+                        <p>Departamentos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Resumen Mensual -->
+            <div class="card">
+                <h3>📋 Resumen de Pagos del Mes</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Departamento</th>
+                                <th>Cargo</th>
+                                <th>Salario Bruto</th>
+                                <th>Descuentos</th>
+                                <th>Adelantos</th>
+                                <th>Salario Neto</th>
+                                <th>Fecha Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaDashboard">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: EMPLEADOS -->
+        <!-- ============================================ -->
+        <section id="empleados" class="tab-content">
+            <div class="section-header">
+                <h2>👥 Gestión de Empleados</h2>
+                <button class="btn-primary" onclick="abrirModalEmpleado()">➕ Nuevo Empleado</button>
+            </div>
+
+            <!-- Búsqueda y Filtros -->
+            <div class="search-bar">
+                <input type="text" id="buscarEmpleado" placeholder="🔍 Buscar por nombre, CI o cargo..." onkeyup="buscarEmpleados()">
+                <select id="filtroEstado" onchange="buscarEmpleados()">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
+                <select id="filtroDepartamento" onchange="buscarEmpleados()">
+                    <option value="">Todos los departamentos</option>
+                    <!-- Se llena dinámicamente -->
+                </select>
+            </div>
+
+            <!-- Tabla de Empleados -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>CI</th>
+                            <th>Cargo</th>
+                            <th>Departamento</th>
+                            <th>Salario</th>
+                            <th>País</th>
+                            <th>AFP (Chile)</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaEmpleados">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: PAGOS -->
+        <!-- ============================================ -->
+        <section id="pagos" class="tab-content">
+            <div class="section-header">
+                <h2>💰 Registro de Pagos</h2>
+                <button class="btn-primary" onclick="abrirModalPago()">➕ Registrar Pago</button>
+            </div>
+
+            <!-- Filtros de Pagos -->
+            <div class="search-bar">
+                <input type="text" id="buscarPago" placeholder="🔍 Buscar por empleado..." onkeyup="buscarPagos()">
+                <select id="filtroPagoMes" onchange="buscarPagos()">
+                    <option value="">Todos los meses</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                <select id="filtroPagoAnio" onchange="buscarPagos()">
+                    <!-- Se llena dinámicamente -->
+                </select>
+            </div>
+
+            <!-- Tabla de Pagos -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Empleado</th>
+                            <th>Salario Bruto</th>
+                            <th>Bonos</th>
+                            <th>Descuentos</th>
+                            <th>Adelantos</th>
+                            <th>Salario Neto</th>
+                            <th>Moneda</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPagos">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: ADELANTOS -->
+        <!-- ============================================ -->
+        <section id="adelantos" class="tab-content">
+            <div class="section-header">
+                <h2>💸 Gestión de Adelantos</h2>
+                <button class="btn-primary" onclick="abrirModalAdelanto()">➕ Nuevo Adelanto</button>
+            </div>
+
+            <!-- Estadísticas de Adelantos -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💸</div>
+                    <div class="stat-info">
+                        <h3 id="totalAdelantosActivos">0</h3>
+                        <p>Adelantos Activos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="montoTotalAdelantos">$0</h3>
+                        <p>Monto Total</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="montoPendiente">$0</h3>
+                        <p>Pendiente de Pago</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 id="adelantosPagados">0</h3>
+                        <p>Adelantos Pagados</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Búsqueda de Adelantos -->
+            <div class="search-bar">
+                <input type="text" id="buscarAdelanto" placeholder="🔍 Buscar por empleado..." onkeyup="buscarAdelantos()">
+                <select id="filtroEstadoAdelanto" onchange="buscarAdelantos()">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activos</option>
+                    <option value="pagado">Pagados</option>
+                </select>
+            </div>
+
+            <!-- Tabla de Adelantos -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Monto Total</th>
+                            <th>Monto Pagado</th>
+                            <th>Saldo Pendiente</th>
+                            <th>Cuotas</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaAdelantos">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: DEPARTAMENTOS -->
+        <!-- ============================================ -->
+        <section id="departamentos" class="tab-content">
+            <div class="section-header">
+                <h2>🏢 Gestión de Departamentos</h2>
+                <button class="btn-primary" onclick="abrirModalDepartamento()">➕ Nuevo Departamento</button>
+            </div>
+
+            <div id="listaDepartamentos" class="departments-grid">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: VACACIONES -->
+        <!-- ============================================ -->
+        <section id="vacaciones" class="tab-content">
+            <div class="section-header">
+                <h2>🌴 Gestión de Vacaciones</h2>
+                <button class="btn-primary" onclick="abrirModalVacaciones()">➕ Registrar Vacaciones</button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="search-bar">
+                <input type="text" id="buscarVacacion" placeholder="🔍 Buscar por empleado..." onkeyup="buscarVacaciones()">
+                <select id="filtroEstadoVacacion" onchange="buscarVacaciones()">
+                    <option value="">Todos los estados</option>
+                    <option value="aprobada">Aprobadas</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="rechazada">Rechazadas</option>
+                    <option value="completada">Completadas</option>
+                </select>
+            </div>
+
+            <!-- Tabla de Vacaciones -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Departamento</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Motivo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaVacaciones">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: LICENCIAS MÉDICAS -->
+        <!-- ============================================ -->
+        <section id="licencias" class="tab-content">
+            <div class="section-header">
+                <h2>🏥 Licencias Médicas</h2>
+                <button class="btn-primary" onclick="abrirModalLicencia()">➕ Registrar Licencia</button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="search-bar">
+                <input type="text" id="buscarLicencia" placeholder="🔍 Buscar por empleado..." onkeyup="buscarLicencias()">
+                <select id="filtroEstadoLicencia" onchange="buscarLicencias()">
+                    <option value="">Todos los estados</option>
+                    <option value="activa">Activas</option>
+                    <option value="finalizada">Finalizadas</option>
+                </select>
+            </div>
+
+            <!-- Tabla de Licencias -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Departamento</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Diagnóstico</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaLicencias">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: CALCULADORA DE SALARIOS -->
+        <!-- ============================================ -->
+        <section id="calculadora" class="tab-content">
+            <div class="section-header">
+                <h2>🧮 Calculadora de Salarios</h2>
+            </div>
+
+            <div class="calculator-container">
+                <!-- Selector de País -->
+                <div class="card">
+                    <h3>🌎 Seleccionar País</h3>
+                    <div class="form-group">
+                        <select id="calcPais" onchange="mostrarCalculadoraSegunPais()">
+                            <option value="general">General (Bolivia y otros)</option>
+                            <option value="chile">Chile (con AFP)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CALCULADORA GENERAL -->
+                <div id="calculadoraGeneral" class="card">
+                    <h3>💰 Calculadora General</h3>
+                    <div class="calculator-grid">
+                        <div class="form-group">
+                            <label>Salario Bruto</label>
+                            <input type="number" id="calcBruto" step="0.01" oninput="calcularSalarioGeneral()">
+                        </div>
+                        <div class="form-group">
+                            <label>Bonos</label>
+                            <input type="number" id="calcBonos" step="0.01" value="0" oninput="calcularSalarioGeneral()">
+                        </div>
+                        <div class="form-group">
+                            <label>Descuentos (%)</label>
+                            <input type="number" id="calcDescuentos" step="0.01" value="0" oninput="calcularSalarioGeneral()">
+                        </div>
+                        <div class="form-group">
+                            <label>Horas Nocturnas</label>
+                            <input type="number" id="calcHorasNocturnas" value="0" oninput="calcularSalarioGeneral()">
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <h3>Salario Neto: <span id="resultadoGeneral">$0.00</span></h3>
+                    </div>
+                </div>
+
+                <!-- CALCULADORA CHILE -->
+                <div id="calculadoraChile" class="card" style="display: none;">
+                    <h3>🇨🇱 Calculadora Chile (con AFP)</h3>
+                    
+                    <!-- Selector de modo de cálculo -->
+                    <div class="form-group">
+                        <label>Modo de Cálculo</label>
+                        <select id="modoCalculoChile" onchange="cambiarModoCalculoChile()">
+                            <option value="bruto-neto">Calcular Neto desde Bruto</option>
+                            <option value="neto-bruto">Calcular Bruto desde Neto (Inverso)</option>
+                        </select>
+                    </div>
+
+                    <!-- Cálculo Bruto a Neto -->
+                    <div id="modoBrutoNeto">
+                        <div class="calculator-grid">
+                            <div class="form-group">
+                                <label>Salario Bruto</label>
+                                <input type="number" id="calcChileBruto" step="0.01" oninput="calcularSalarioChile()">
+                            </div>
+                            <div class="form-group">
+                                <label>AFP</label>
+                                <select id="calcChileAFP" onchange="calcularSalarioChile()">
+                                    <option value="10.77">Capital (10.77%)</option>
+                                    <option value="11.44">Cuprum (11.44%)</option>
+                                    <option value="11.54">Habitat (11.54%)</option>
+                                    <option value="11.14">Planvital (11.14%)</option>
+                                    <option value="10.49">Provida (10.49%)</option>
+                                    <option value="10.69">Modelo (10.69%)</option>
+                                    <option value="10.83">Uno (10.83%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Salud (%)</label>
+                                <input type="number" id="calcChileSalud" value="7" step="0.01" oninput="calcularSalarioChile()">
+                            </div>
+                            <div class="form-group">
+                                <label>Seguro Cesantía (%)</label>
+                                <input type="number" id="calcChileCesantia" value="0.6" step="0.01" oninput="calcularSalarioChile()">
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <h4>Detalle de Descuentos:</h4>
+                            <p>AFP: <span id="detalleAFP">$0.00</span></p>
+                            <p>Salud: <span id="detalleSalud">$0.00</span></p>
+                            <p>Cesantía: <span id="detalleCesantia">$0.00</span></p>
+                            <p>Total Descuentos: <span id="detalleTotalDesc">$0.00</span></p>
+                            <h3>Salario Neto: <span id="resultadoChile">$0.00</span></h3>
+                        </div>
+                    </div>
+
+                    <!-- Cálculo Neto a Bruto (Inverso) -->
+                    <div id="modoNetoBruto" style="display: none;">
+                        <div class="calculator-grid">
+                            <div class="form-group">
+                                <label>Salario Neto Deseado</label>
+                                <input type="number" id="calcChileNetoDeseado" step="0.01" oninput="calcularSalarioInversoChile()">
+                            </div>
+                            <div class="form-group">
+                                <label>AFP</label>
+                                <select id="calcChileAFPInverso" onchange="calcularSalarioInversoChile()">
+                                    <option value="10.77">Capital (10.77%)</option>
+                                    <option value="11.44">Cuprum (11.44%)</option>
+                                    <option value="11.54">Habitat (11.54%)</option>
+                                    <option value="11.14">Planvital (11.14%)</option>
+                                    <option value="10.49">Provida (10.49%)</option>
+                                    <option value="10.69">Modelo (10.69%)</option>
+                                    <option value="10.83">Uno (10.83%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Salud (%)</label>
+                                <input type="number" id="calcChileSaludInverso" value="7" step="0.01" oninput="calcularSalarioInversoChile()">
+                            </div>
+                            <div class="form-group">
+                                <label>Seguro Cesantía (%)</label>
+                                <input type="number" id="calcChileCesantiaInverso" value="0.6" step="0.01" oninput="calcularSalarioInversoChile()">
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <h4>Detalle de Cálculo Inverso:</h4>
+                            <p>AFP: <span id="detalleAFPInverso">$0.00</span></p>
+                            <p>Salud: <span id="detalleSaludInverso">$0.00</span></p>
+                            <p>Cesantía: <span id="detalleCesantiaInverso">$0.00</span></p>
+                            <p>Total Descuentos: <span id="detalleTotalDescInverso">$0.00</span></p>
+                            <h3>Salario Bruto Necesario: <span id="resultadoChileInverso">$0.00</span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: CALENDARIO -->
+        <!-- ============================================ -->
+        <section id="calendario" class="tab-content">
+            <div class="section-header">
+                <h2>📅 Calendario de Eventos</h2>
+                <div class="calendar-controls">
+                    <button onclick="mesAnterior()">◀</button>
+                    <h3 id="mesCalendario">Noviembre 2025</h3>
+                    <button onclick="mesSiguiente()">▶</button>
+                </div>
+            </div>
+
+            <div class="calendar-legend">
+                <span class="legend-item"><span class="dot pago"></span> Pagos</span>
+                <span class="legend-item"><span class="dot cumpleanos"></span> Cumpleaños</span>
+                <span class="legend-item"><span class="dot vacacion"></span> Vacaciones</span>
+                <span class="legend-item"><span class="dot licencia"></span> Licencias</span>
+            </div>
+
+            <div id="calendarioVista" class="calendar-view">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TAB: REPORTES -->
+        <!-- ============================================ -->
+        <section id="reportes" class="tab-content">
+            <div class="section-header">
+                <h2>📈 Reportes y Análisis</h2>
+            </div>
+
+            <div class="reports-grid">
+                <div class="card">
+                    <h3>📊 Reporte por Departamento</h3>
+                    <div class="form-group">
+                        <select id="reporteDpto" onchange="generarReporteDepartamento()">
+                            <option value="">Seleccionar departamento</option>
+                            <!-- Se llena dinámicamente -->
+                        </select>
+                    </div>
+                    <div id="resultadoReporteDpto"></div>
+                    <button class="btn-secondary" onclick="exportarReporteDpto()">📥 Exportar CSV</button>
+                </div>
+
+                <div class="card">
+                    <h3>💼 Reporte por Cargo</h3>
+                    <div class="form-group">
+                        <input type="text" id="reporteCargo" placeholder="Ingrese cargo a buscar">
+                        <button class="btn-primary" onclick="generarReporteCargo()">Generar</button>
+                    </div>
+                    <div id="resultadoReporteCargo"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📅 Reporte Mensual</h3>
+                    <div class="form-group">
+                        <select id="reporteMes">
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                        <select id="reporteAnio">
+                            <!-- Se llena dinámicamente -->
+                        </select>
+                        <button class="btn-primary" onclick="generarReporteMensual()">Generar</button>
+                    </div>
+                    <div id="resultadoReporteMensual"></div>
+                    <button class="btn-secondary" onclick="exportarReporteMensual()">📥 Exportar CSV</button>
+                </div>
+
+                <div class="card">
+                    <h3>💾 Exportar / Importar Datos</h3>
+                    <button class="btn-primary" onclick="exportarDatos()">📥 Exportar Todo</button>
+                    <button class="btn-secondary" onclick="document.getElementById('importarArchivo').click()">📤 Importar Datos</button>
+                    <input type="file" id="importarArchivo" accept=".json" style="display: none;" onchange="importarDatos(event)">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================ -->
+    <!-- MODALES -->
+    <!-- ============================================ -->
+
+    <!-- Modal Empleado -->
+    <div id="modalEmpleado" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalEmpleado">➕ Nuevo Empleado</h2>
+                <button class="btn-close" onclick="cerrarModal('modalEmpleado')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formEmpleado" onsubmit="guardarEmpleado(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre Completo *</label>
+                            <input type="text" id="empleadoNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CI/DNI *</label>
+                            <input type="text" id="empleadoCI" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo *</label>
+                            <input type="text" id="empleadoCargo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Departamento *</label>
+                            <select id="empleadoDepartamento" required>
+                                <option value="">Seleccionar...</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Salario Base *</label>
+                            <input type="number" id="empleadoSalario" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Ingreso *</label>
+                            <input type="date" id="empleadoFechaIngreso" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Nacimiento</label>
+                            <input type="date" id="empleadoFechaNacimiento">
+                        </div>
+                        <div class="form-group">
+                            <label>País *</label>
+                            <select id="empleadoPais" onchange="mostrarOpcionesAFP()">
+                                <option value="bolivia">Bolivia</option>
+                                <option value="chile">Chile</option>
+                                <option value="argentina">Argentina</option>
+                                <option value="peru">Perú</option>
+                                <option value="colombia">Colombia</option>
+                                <option value="ecuador">Ecuador</option>
+                                <option value="paraguay">Paraguay</option>
+                                <option value="uruguay">Uruguay</option>
+                                <option value="venezuela">Venezuela</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="grupoAFP" style="display: none;">
+                            <label>AFP (solo Chile)</label>
+                            <select id="empleadoAFP">
+                                <option value="">No aplica</option>
+                                <option value="capital">Capital (10.77%)</option>
+                                <option value="cuprum">Cuprum (11.44%)</option>
+                                <option value="habitat">Habitat (11.54%)</option>
+                                <option value="planvital">Planvital (11.14%)</option>
+                                <option value="provida">Provida (10.49%)</option>
+                                <option value="modelo">Modelo (10.69%)</option>
+                                <option value="uno">Uno (10.83%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Moneda</label>
+                            <select id="empleadoMoneda">
+                                <option value="BOB">BOB - Boliviano</option>
+                                <option value="USD">USD - Dólar</option>
+                                <option value="CLP">CLP - Peso Chileno</option>
+                                <option value="ARS">ARS - Peso Argentino</option>
+                                <option value="PEN">PEN - Sol Peruano</option>
+                                <option value="COP">COP - Peso Colombiano</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="BRL">BRL - Real Brasileño</option>
+                                <option value="MXN">MXN - Peso Mexicano</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="empleadoEstado">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Correo Electrónico</label>
+                            <input type="email" id="empleadoEmail">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Teléfono</label>
+                            <input type="tel" id="empleadoTelefono">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Dirección</label>
+                            <input type="text" id="empleadoDireccion">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalEmpleado')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pago -->
+    <div id="modalPago" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💰 Registrar Pago</h2>
+                <button class="btn-close" onclick="cerrarModal('modalPago')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formPago" onsubmit="guardarPago(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Empleado *</label>
+                            <select id="pagoEmpleado" onchange="cargarDatosEmpleadoPago()" required>
+                                <option value="">Seleccionar empleado...</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Salario Bruto *</label>
+                            <input type="number" id="pagoSalarioBruto" step="0.01" oninput="actualizarCalculosPago()" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Bonos</label>
+                            <input type="number" id="pagoBonos" step="0.01" value="0" oninput="actualizarCalculosPago()">
+                        </div>
+                        <div class="form-group">
+                            <label>Descuentos (%)</label>
+                            <input type="number" id="pagoDescuentos" step="0.01" value="0" min="0" max="100" oninput="actualizarCalculosPago()">
+                        </div>
+                        <div class="form-group">
+                            <label>Horas Nocturnas</label>
+                            <input type="number" id="pagoHorasNocturnas" value="0" min="0" oninput="actualizarCalculosPago()">
+                        </div>
+                        <div class="form-group">
+                            <label>Adelantos a Descontar</label>
+                            <input type="number" id="pagoAdelantos" step="0.01" value="0" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Pago *</label>
+                            <input type="date" id="pagoFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Moneda</label>
+                            <select id="pagoMoneda">
+                                <option value="BOB">BOB</option>
+                                <option value="USD">USD</option>
+                                <option value="CLP">CLP</option>
+                                <option value="ARS">ARS</option>
+                                <option value="PEN">PEN</option>
+                                <option value="COP">COP</option>
+                                <option value="EUR">EUR</option>
+                                <option value="BRL">BRL</option>
+                                <option value="MXN">MXN</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Concepto / Notas</label>
+                            <textarea id="pagoConcepto" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <h3>Salario Neto: <span id="pagoSalarioNeto">$0.00</span></h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalPago')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Registrar Pago</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adelanto -->
+    <div id="modalAdelanto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalAdelanto">💸 Nuevo Adelanto</h2>
+                <button class="btn-close" onclick="cerrarModal('modalAdelanto')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formAdelanto" onsubmit="guardarAdelanto(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Empleado *</label>
+                            <select id="adelantoEmpleado" required>
+                                <option value="">Seleccionar empleado...</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Monto Total *</label>
+                            <input type="number" id="adelantoMonto" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Cuotas *</label>
+                            <input type="number" id="adelantoCuotas" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha *</label>
+                            <input type="date" id="adelantoFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Moneda</label>
+                            <select id="adelantoMoneda">
+                                <option value="BOB">BOB</option>
+                                <option value="USD">USD</option>
+                                <option value="CLP">CLP</option>
+                                <option value="ARS">ARS</option>
+                                <option value="PEN">PEN</option>
+                                <option value="COP">COP</option>
+                                <option value="EUR">EUR</option>
+                                <option value="BRL">BRL</option>
+                                <option value="MXN">MXN</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Motivo / Descripción</label>
+                            <textarea id="adelantoMotivo" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalAdelanto')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Departamento -->
+    <div id="modalDepartamento" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalDepartamento">🏢 Nuevo Departamento</h2>
+                <button class="btn-close" onclick="cerrarModal('modalDepartamento')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formDepartamento" onsubmit="guardarDepartamento(event)">
+                    <div class="form-group">
+                        <label>Nombre del Departamento *</label>
+                        <input type="text" id="departamentoNombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="departamentoDescripcion" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalDepartamento')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vacaciones -->
+    <div id="modalVacaciones" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalVacaciones">🌴 Registrar Vacaciones</h2>
+                <button class="btn-close" onclick="cerrarModal('modalVacaciones')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formVacaciones" onsubmit="guardarVacaciones(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Empleado *</label>
+                            <select id="vacacionEmpleado" required>
+                                <option value="">Seleccionar empleado...</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Inicio *</label>
+                            <input type="date" id="vacacionInicio" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Fin *</label>
+                            <input type="date" id="vacacionFin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="vacacionEstado">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="aprobada">Aprobada</option>
+                                <option value="rechazada">Rechazada</option>
+                                <option value="completada">Completada</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Motivo</label>
+                            <textarea id="vacacionMotivo" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalVacaciones')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Licencia -->
+    <div id="modalLicencia" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalLicencia">🏥 Registrar Licencia Médica</h2>
+                <button class="btn-close" onclick="cerrarModal('modalLicencia')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formLicencia" onsubmit="guardarLicencia(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Empleado *</label>
+                            <select id="licenciaEmpleado" required>
+                                <option value="">Seleccionar empleado...</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Inicio *</label>
+                            <input type="date" id="licenciaInicio" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Fin *</label>
+                            <input type="date" id="licenciaFin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="licenciaEstado">
+                                <option value="activa">Activa</option>
+                                <option value="finalizada">Finalizada</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Diagnóstico / Motivo</label>
+                            <textarea id="licenciaDiagnostico" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="cerrarModal('modalLicencia')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Configuración -->
+    <div id="modalConfiguracion" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Configuración del Sistema</h2>
+                <button class="btn-close" onclick="cerrarModal('modalConfiguracion')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="config-section">
+                    <h3>🎨 Temas Disponibles</h3>
+                    <div class="theme-selector">
+                        <button onclick="aplicarTema('light')" class="theme-btn">☀️ Claro</button>
+                        <button onclick="aplicarTema('dark')" class="theme-btn">🌙 Oscuro</button>
+                        <button onclick="aplicarTema('blue')" class="theme-btn">🔵 Azul</button>
+                        <button onclick="aplicarTema('green')" class="theme-btn">🟢 Verde</button>
+                        <button onclick="aplicarTema('purple')" class="theme-btn">🟣 Morado</button>
+                    </div>
+                </div>
+                <div class="config-section">
+                    <h3>💾 Gestión de Datos</h3>
+                    <button class="btn-secondary" onclick="limpiarDatos()">🗑️ Limpiar Todos los Datos</button>
+                    <p class="warning-text">⚠️ Esta acción no se puede deshacer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Boleta -->
+    <div id="modalBoleta" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>📄 Boleta de Pago</h2>
+                <button class="btn-close" onclick="cerrarModal('modalBoleta')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoBoleta" class="boleta-container">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" onclick="imprimirBoleta()">🖨️ Imprimir</button>
+                    <button class="btn-secondary" onclick="cerrarModal('modalBoleta')">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts-v3-corregido.js"></script>
+</body>
+</html>
